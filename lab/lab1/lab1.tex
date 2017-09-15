@@ -23,13 +23,13 @@ The CPU is hidden under the CPU fan, because the working of CPU in high frequenc
 
 \item What are the North and South bridges?
 
-The north bridge is mainly responsible for connecting the CPU and the RAM controller.
+The north bridge is mainly responsible for connecting the CPU, the RAM controller and the south bridge.
 
 The south bridge is mainly responsible for the communication in the I/O bus, such as USB, PCI/PCI-e, SATA, and LAN.
 
 \item How are the North and South bridges connected together?
 
-They are connected with DMI (Direct Media Interface).
+They are connected with internal buses such as DMI (Direct Media Interface) on Intel Chipsets and UMI (Unified Media Interface) on AMD Chipsets.
 
 \item What is the BIOS?
 
@@ -37,10 +37,19 @@ BIOS is the Basic Input Output System, which is stored in a ROM on the motherboa
 
 \item Take out the CPU, rotate it and try to plug it back in a different position, is that working?
 
-No, the CPU should be plugged in a unique direction. Most of the modern CPUs have different shapes of corners so that the user can only plug in it in the right direction.
+No, the CPU must be plugged in a unique direction. Most of the modern CPUs have different shapes of corners so that the user can only plug in it in the right direction.
 
 \item Explain what overclocking is?
 
+Clock means clock frequency in CPU, and every CPU has a default clock frequency decided by the CPU provider. However, users can increase the voltage supplied to the CPU and thus increase the default clock frequency, which is called overclocking. Overclocking consumes more power and release more heat. If the heat can't be controlled, the CPU is likely to be damaged.
+
+\item What are pins on a PCI/PCI-e card and what are they used for?
+
+Pins are small metal sticks under the PCI/PCI-e card, which provides electronic communication between the card and the motherboard.
+
+\item Before PCI-e became a common standard many graphics cards were using Accelerated Graphics Port (AGP), explain why.
+
+AGP is based on PCI, it provides a connection between the slot and the processor instead of sharing the PCI bus, and the direct connection allows for higher clock speeds. However, the PCI-e standard provides better performance than PCI/AGP, so AGP was finally phased out.
 
 
 \end{itemize}
