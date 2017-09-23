@@ -7,6 +7,9 @@
 \usepackage{geometry}
 \usepackage{caption}
 \usepackage{indentfirst}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
 \geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
 \renewcommand{\thesection}{Ex. \arabic{section} ---}
 \newcommand{\unit}[1]{{\rm\,#1}}
@@ -17,6 +20,30 @@
 \begin{document}
 \maketitle
 
+\section{Revisions}
+
+
+\section{Personal Research}
+\begin{enumerate}
+\item
+When the computer is powered on, the CPU executed a program contained in ROM (like BIOS) at a predefined address. The program (BIOS as example) searches for devices installed on the computer and loads them and tries a power-on self-test. If no error occurs, it locate boot loader software held on a storage device. It loads and executes the first boot software (often an OS) it finds, giving it control of the PC. The role of BIOS is a bridge between the PC and the operating system.
+\item
+Hybrid kernels combine micro kernels and monolithic kernels. \\
+Exo kernels are small and give more direct access to the hardware.
+\end{enumerate}
+
+\section{Course application}
+\begin{enumerate}
+\item
+\begin{enumerate}[a)]
+\item Disable all interrupts should only be allowed in kernel mode because the process of interrupt is in kernel mode.
+\item Read the time-of-day clock should only be allowed in kernel mode because it needs I/O with the hardware (CMOS).
+\item Set the time-of-day clock should only be allowed in kernel mode because it needs I/O with the hardware (CMOS).
+\item Change the memory map should only be allowed in kernel mode because memory management is in kernel mode.
+\end{enumerate}
+\item Since there are four logic cores in the system, three programs can be executed in parallel, 20 ms is needed.
+\end{enumerate}
+
 \section{Simple problem}
 The RAM needed to support a 25 lines by 80 rows character monochrome text screen is $25\times80/8=250\unit{B}$. It costs  $250\times5/1024=\$ 1.22$.
 
@@ -24,7 +51,8 @@ The RAM needed to support a 1024 x 768 pixel 24-bit color bitmap is $1024\times7
 
 Now the cost if RAM is about $\$10/\unit{GB}$.
 
-\section{Programming}
-Uploaded to Canvas.
+\section{Command lines on a Unix system}
+\inputminted{shell}{ex5/ex5.sh}
+The shell file is named ``ex5/ex5.sh''.
 
 \end{document}

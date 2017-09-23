@@ -1,0 +1,167 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\title{VE482 Lab 2}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Basic shell}
+\begin{itemize}
+\item Use the \mintinline{c}{mkdir}, \mintinline{c}{touch}, \mintinline{c}{mv}, \mintinline{c}{cp}, and \mintinline{c}{ls} commands to:
+\begin{itemize}
+\item Create a file named \mintinline{c}{test}.
+\begin{minted}{shell}
+touch test
+\end{minted}
+\item Move test to \mintinline{c}{dir/test.txt}, where \mintinline{c}{dir} is a new directory.
+\begin{minted}{shell}
+mkdir dir
+mv test dir/test.txt
+\end{minted}
+\item Copy \mintinline{c}{dir/test.txt} to \mintinline{c}{dir/test_copy.txt}.
+\begin{minted}{shell}
+cp dir/test.txt dir/text_copy.txt
+\end{minted}
+\item List all the files contained in \mintinline{c}{dir}.
+\begin{minted}{shell}
+ls dir -a
+\end{minted}
+\end{itemize}
+
+\item Use the \mintinline{c}{grep} command to:
+\begin{itemize}
+\item List all the files form \mintinline{c}{/etc} containing the pattern \mintinline{latex}{127.0.0.1}.
+\begin{minted}{shell}
+grep -r '127.0.0.1' /etc
+\end{minted}
+\item Only print the lines containing your username and root in the file /etc/passwd (only one grep should be used)
+\begin{minted}{shell}
+grep -rE '(liu|root)' /etc/passwd
+\end{minted}
+\end{itemize}
+
+\item Use the \mintinline{c}{find} command to:
+\begin{itemize}
+\item List all the files from \mintinline{c}{/etc} that have been accessed less than 24 hours ago.
+\begin{minted}{shell}
+find /etc -atime 1
+\end{minted}
+\item List all the files from \mintinline{c}{/etc} whose name contains the pattern ``netw''.
+\begin{minted}{shell}
+find /etc -name '*netw*'
+\end{minted}
+\end{itemize}
+
+\item In the bash man-page read the part related to redirections. Explain the following signs \mintinline{c}{>}, \mintinline{c}{>>}, \mintinline{c}{<<<}, \mintinline{c}{>&1}, and \mintinline{c}{2>&1 >}. What is the use of the tee command. \\[0.5em]
+\mintinline{c}{>} redirects the standard output into a file. \\[0.5em]
+\mintinline{c}{>>} redirects and appends the standard output into a file. \\[0.5em]
+\mintinline{c}{<<<} redirects the contents on the right as the standard input of the command on the left. \\[0.5em]
+\mintinline{c}{>&1} redirects the standard output into standard output (meaningless). \\[0.5em]
+\mintinline{c}{2>&1 >} redirects the standard error into standard output, and redirects the origin standard output into a file.
+
+\item Explain the behaviour of the \mintinline{c}{xargs} command and of the | sign. \\[0.5em]
+\mintinline{c}{xargs} is used to build and execute command lines from standard input, by combining multi lines and extra spaces into a line with single spaces.\\[0.5em]
+The | sign pipes the standard output of the command on the left into the command on the right as the standard input.
+
+\item What are the \mintinline{c}{head} and \mintinline{c}{tail} commands? How to ``live display'' a file as new lines are appended? \\[0.5em]
+\mintinline{c}{head} and \mintinline{c}{tail} are used to get the first and last several lines of a file. \\[0.5em]
+Use the \mintinline{c}{-f} option of \mintinline{c}{tail} to ``live display'' a file as new lines are appended.
+
+\item How to monitor the system using \mintinline{c}{ps}, \mintinline{c}{top}, \mintinline{c}{free}, \mintinline{c}{vmstat}? \\[0.5em]
+\mintinline{c}{ps} is used to monitor the processes. \\[0.5em]
+\mintinline{c}{top} is used to monitor the CPU and RAM of processes. \\[0.5em]
+\mintinline{c}{free} is used to monitor the RAM. \\[0.5em]
+\mintinline{c}{vmstat} is used to monitor the RAM, IO and CPU in a period. \\[0.5em]
+
+\item In Minix 3, how to manage softwares (install, remove, update... )?
+\begin{minted}{shell}
+pkgin update       # Update the package repository
+pkgin install name # Install a package
+pkgin remove name  # Remove a package
+pkgin upgrade name # Upgrade a package
+pkgin search name  # Search a package
+\end{minted}
+
+\item What is the purpose of the commands \mintinline{c}{ifconfig}, \mintinline{c}{adduser}, and \mintinline{c}{passwd}?\\[0.5em]
+\mintinline{c}{ifconfig} is used to checks the state of network. \\[0.5em]
+\mintinline{c}{adduser} is used to create a new user. \\[0.5em]
+\mintinline{c}{passwd} is used to set password for the current user. 
+\end{itemize}
+
+\section{Working on a remote server}
+\begin{itemize}
+\item Setup an SSH server on Minix 3. From Linux (using ssh) or Windows (using Putty) log into Minix 3. Note: the network need to be properly setup on the Virtual Machine (VM).
+\begin{minted}{shell}
+ssh root@192.168.1.101
+\end{minted}
+
+\item What is the default SSH port? Change this port for port 2222. Log into Minix 3 using this new SSH server setup. \\[0.5em]
+The default port is 22.\\[0.5em]
+On Minix3:
+\begin{minted}{shell}
+vi /etc/ssh/sshd_config
+\end{minted}
+and edit the option ``Port''. \\[0.5em]
+On Linux:
+\begin{minted}{shell}
+ssh root@192.168.1.101 -p2222
+\end{minted}
+
+\item List and explain the role of each the file in the \mintinline{shell}{$HOME/.ssh} directory. In \mintinline{shell}{$HOME/.ssh/config}, create an entry for Minix 3.
+
+\begin{minted}{shell}
+ls $HOME/.ssh
+\end{minted}
+%$
+
+\item Briefly explain how key-only authentication works in SSH. Generate a key-pair on the host system and use it to log into Minix 3 without a password.\\[0.5em]
+On Minix3:
+\begin{minted}{shell}
+ssh-keygen -t rsa
+\end{minted}
+and copy \mintinline{shell}{$HOME/.ssh/id_rsa} to Linux. \\[0.5em] %$
+On Linux:
+\begin{minted}{shell}
+ssh root@192.168.1.101 -p2222 -iid_rsa
+\end{minted}
+
+\end{itemize}
+
+\section{Basic Bash scripting}
+\begin{itemize}
+\item What should be the first line of a Bash script?
+\begin{minted}{shell}
+#/bin/bash
+\end{minted}
+\item What are the main differences between sh, bash, csh, and zsh?
+\item How to define and access variables?
+\begin{minted}{shell}
+var=1       # define a variable named var and assign it as 1
+echo ${var} # echo the defined variable
+\end{minted}
+%$
+\item What is the meaning of \mintinline{shell}{$0, $1,..., $?, $!}? \\[0.5em]
+\mintinline{shell}{$0} means \mintinline{c}{argv[0]} in C. \\[0.5em]
+\mintinline{shell}{$1} means \mintinline{c}{argv[1]} in C. \\[0.5em]
+\mintinline{shell}{$?} means the exit status of the last command. \\[0.5em]
+\mintinline{shell}{$!} means the process id of the last command.
+
+\item How to define arrays and access or assign elements?
+
+\end{itemize}
+
+
+\end{document}
