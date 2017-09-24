@@ -7,6 +7,7 @@
 \usepackage{geometry}
 \usepackage{caption}
 \usepackage{indentfirst}
+\usepackage[colorlinks,urlcolor=blue]{hyperref}
 \usepackage{minted}
 \usemintedstyle{autumn}
 \setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
@@ -84,7 +85,7 @@ Use the \mintinline{c}{-f} option of \mintinline{c}{tail} to ``live display'' a 
 \mintinline{c}{ps} is used to monitor the processes. \\[0.5em]
 \mintinline{c}{top} is used to monitor the CPU and RAM of processes. \\[0.5em]
 \mintinline{c}{free} is used to monitor the RAM. \\[0.5em]
-\mintinline{c}{vmstat} is used to monitor the RAM, IO and CPU in a period. \\[0.5em]
+\mintinline{c}{vmstat} is used to monitor the RAM, IO and CPU in a period. 
 
 \item In Minix 3, how to manage softwares (install, remove, update... )?
 \begin{minted}{shell}
@@ -146,13 +147,17 @@ ssh root@192.168.1.101 -p2222 -iid_rsa
 \begin{minted}{shell}
 #/bin/bash
 \end{minted}
-\item What are the main differences between sh, bash, csh, and zsh?
+\item What are the main differences between \mintinline{c}{sh}, \mintinline{c}{bash}, \mintinline{c}{csh}, and \mintinline{c}{zsh}? \\[0.5em]
+\mintinline{c}{sh} is the origin shell of Unix, \mintinline{c}{bash}, \mintinline{c}{csh}, and \mintinline{c}{zsh} are different expansion of \mintinline{c}{sh}, they are all compatible with \mintinline{c}{sh}, but perhaps not compatible with each other.
+
 \item How to define and access variables?
 \begin{minted}{shell}
-var=1       # define a variable named var and assign it as 1
-echo ${var} # echo the defined variable
+var=1         # define a variable named var and assign it as 1
+let var=var+1 # maths calculation
+var=$var+1    # string concat
+echo ${var}   # echo the variable
 \end{minted}
-%$
+
 \item What is the meaning of \mintinline{shell}{$0, $1,..., $?, $!}? \\[0.5em]
 \mintinline{shell}{$0} means \mintinline{c}{argv[0]} in C. \\[0.5em]
 \mintinline{shell}{$1} means \mintinline{c}{argv[1]} in C. \\[0.5em]
@@ -160,6 +165,123 @@ echo ${var} # echo the defined variable
 \mintinline{shell}{$!} means the process id of the last command.
 
 \item How to define arrays and access or assign elements?
+\begin{minted}{shell}
+array=(var1 var2 var3 varN)
+echo ${array[0]}
+array[3]=var3
+echo ${array[3]}
+\end{minted}
+
+\item How to perform \mintinline{shell}{if} and \mintinline{shell}{switch} statements? Provide an example.
+\begin{minted}{shell}
+# if statement
+if [ "$1" = "" ]; then
+    echo 0
+elif [ "$1" = 1 ]; then
+    echo 1
+else
+    echo 2
+fi
+
+# switch statement
+case $1 in 
+    1 )
+        echo 1 ;; 
+    2 )
+        echo 2 ;; 
+    * ) 
+        echo 0 ;;
+esac
+\end{minted}
+%$
+
+\item What are the various syntaxes of a \mintinline{shell}{for} loop? For each type write a sample code.
+
+\begin{minted}{shell}
+
+# for-in loop
+for file in * ; do  
+    echo $file  
+done
+
+# c-style for loop
+for ((i=0; i<10; ++i)); do
+    echo $i
+done
+
+\end{minted}
+
+\item How to write a \mintinline{shell}{while} loop?
+\begin{minted}{shell}
+i=0
+while [ $i -lt 10 ]; do  
+    echo $i  
+    let i=i+1
+done
+\end{minted}
+
+\item What is the use of the \mintinline{c}{PS3} variable? Provide a short code example. \\[0.5em]
+PS3 is the select prompt \mintinline{latex}{#?}, it is displayed in a select statement.
+
+\begin{minted}{shell}
+echo "Who is the strongest person in JI"
+choices='xd qss gg xyy wgz' 
+select person in $choices; do 
+    if [ $person ]; then 
+        echo "$person is the strongest person in JI." 
+        break
+    else 
+        echo "Invalid, select again." 
+    fi 
+done
+\end{minted}
+%$
+
+\item What is the purpose of the \mintinline{c}{iconv} command, and why is it useful? \\[0.5em]
+The \mintinline{c}{iconv} command reads in text in one encoding and outputs the text in another encoding. It is useful because there are various encoding in different operation systems, if one wants to use a file from another environment, the transform is important.
+
+\item Given a variable \mintinline{shell}{$temp} what is the effect of \mintinline{shell}{${#temp}}, \mintinline{shell}{${temp%%word}}, \mintinline{shell}{${temp/pattern/string}}. \\[0.5em]
+\mintinline{shell}{${#temp}} means the length of \mintinline{shell}{$temp}. \\[0.5em]
+\mintinline{shell}{${temp%%word}} deletes \mintinline{shell}{word} on the right of \mintinline{shell}{$temp}. \\[0.5em]
+\mintinline{shell}{${temp/pattern/string}} replaces \mintinline{shell}{pattern} with \mintinline{shell}{string} in \mintinline{shell}{$temp}.
+
+\item Search what are ``regular expressions" and how to use them in a \mintinline{c}{grep} or \mintinline{c}{find} command. Give some simple examples based on files and keywords used in exercise 2 of assignment 2.\\[0.5em]
+Regular expressions are some very useful expressions that I can never understand. However, there are also some masters in RegExp such as xyy, xtt and xd.
+
+\end{itemize}
+
+Two programming languages often used in conjunction with Bash are \mintinline{c}{sed} and \mintinline{c}{awk}.
+
+\begin{itemize}
+\item Provide a brief introduction to both of them, explaining how to use them and when they reveal to be the most helpful. \\[0.5em]
+Sed  is  a  stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file or input from a pipeline).  While in some ways similar to an
+       editor which permits scripted edits (such as ed), sed works by making only one pass over the input(s), and is consequently more efficient.  But it is  sed's  ability  to  filter
+       text in a pipeline which particularly distinguishes it from other types of editors. \\[0.5em]
+awk scans each input file for lines that match any of a set of patterns
+     specified literally in prog or in one or more files specified as -f
+     filename.  With each pattern there can be an associated action that will
+     be performed when a line of a file matches the pattern.  Each line is
+     matched against the pattern portion of every pattern-action statement;
+     the associated action is performed for each matched pattern.  The file
+     name - means the standard input.  Any file of the form var=value is
+     treated as an assignment, not a filename, and is executed at the time it
+     would have been opened if it were a filename.
+
+\item Using \mintinline{c}{curl} or \mintinline{c}{wget} retrieve information on \href{http://aqicn.org/?city=Shanghai&widgetscript&size=large}{shanghai air quality} and pipe it to \mintinline{c}{sed} which should parse the output in order to display the information in the terminal following the format below
+
+AQ: value Temp: value $\rm^\circ C$ (e.g. AQ: 55 Temp: 24 $\rm^\circ C$).
+
+\begin{minted}{shell}
+curl --silent 'http://aqicn.org/?city=Shanghai&widgetscript&size=large' \
+| sed ':t;N;s/\n//;b t' \
+| sed 's/\([^\n]\+\)\\\">/AQ: /g' \
+| sed "s/<\/div>\([^\n]\+\)10px;'>/ Temp: /g" \
+| sed 's/<\/td>\([^\n]\+\)//g' \
+&& echo -e '\u00B0C'
+\end{minted}
+
+\item Pipelining the output of \mintinline{c}{ifconfig} to \mintinline{c}{awk} return only the ip address of your current active network connection (the active network interface can be passed to \mintinline{c}{ifconfig}).
+
 
 \end{itemize}
 

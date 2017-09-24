@@ -1,1 +1,2 @@
-echo $0 
+temp=appleword111
+echo ${temp/*word/3}

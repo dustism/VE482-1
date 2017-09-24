@@ -21,7 +21,9 @@
 \maketitle
 
 \section{Revisions}
+Stack is a region of memory reserved by each thread, it is faster than a heap, because the data is added and removed in a last-in-first-out manner. When a function is called, all of the data it needs are saved in the stack one by one. When the function exits, these data can be easily removed. The length and position of a variable in a function is defined by the compiler, which can't be dynamic. So stack-based allocation is suitable for temporary data in function calls.
 
+Heap is a region of memory managed by  operating systems, it is typically larger than a stack, and the precise location of the allocation is not known in advance, the memory is accessed indirectly, usually through a pointer reference. A program can apply and release memory through system calls during executing. When a process ends, the operating system will release all of the heap memory it used.
 
 \section{Personal Research}
 \begin{enumerate}
@@ -41,11 +43,11 @@ Exo kernels are small and give more direct access to the hardware.
 \item Set the time-of-day clock should only be allowed in kernel mode because it needs I/O with the hardware (CMOS).
 \item Change the memory map should only be allowed in kernel mode because memory management is in kernel mode.
 \end{enumerate}
-\item Since there are four logic cores in the system, three programs can be executed in parallel, 20 ms is needed.
+\item If the OS is smart enough, since there are four logic cores in the system, three programs can be executed in parallel, 20 ms is needed. However, if the OS is not so smart, some or all of the programs can't be executed in parallel, then maybe 25 ms, 30 ms, 35 ms is needed.
 \end{enumerate}
 
 \section{Simple problem}
-The RAM needed to support a 25 lines by 80 rows character monochrome text screen is $25\times80/8=250\unit{B}$. It costs  $250\times5/1024=\$ 1.22$.
+The RAM needed to support a 25 lines by 80 rows character monochrome text screen is $25\times80/8=250\unit{B}$. It costs $250\times5/1024=\$ 1.22$.
 
 The RAM needed to support a 1024 x 768 pixel 24-bit color bitmap is $1024\times768\times24/8=2304\unit{KB}$. It costs $2304\times5=\$ 11570$.
 
