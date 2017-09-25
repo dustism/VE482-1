@@ -46,7 +46,7 @@ ls dir -a
 \begin{itemize}
 \item List all the files form \mintinline{c}{/etc} containing the pattern \mintinline{latex}{127.0.0.1}.
 \begin{minted}{shell}
-grep -r '127.0.0.1' /etc
+grep -rl '127.0.0.1' /etc
 \end{minted}
 \item Only print the lines containing your username and root in the file /etc/passwd (only one grep should be used)
 \begin{minted}{shell}
@@ -97,7 +97,7 @@ pkgin search name  # Search a package
 \end{minted}
 
 \item What is the purpose of the commands \mintinline{c}{ifconfig}, \mintinline{c}{adduser}, and \mintinline{c}{passwd}?\\[0.5em]
-\mintinline{c}{ifconfig} is used to checks the state of network. \\[0.5em]
+\mintinline{c}{ifconfig} is used to check the state of network. \\[0.5em]
 \mintinline{c}{adduser} is used to create a new user. \\[0.5em]
 \mintinline{c}{passwd} is used to set password for the current user. 
 \end{itemize}
@@ -106,7 +106,7 @@ pkgin search name  # Search a package
 \begin{itemize}
 \item Setup an SSH server on Minix 3. From Linux (using ssh) or Windows (using Putty) log into Minix 3. Note: the network need to be properly setup on the Virtual Machine (VM).
 \begin{minted}{shell}
-ssh root@192.168.1.101
+ssh root@localhost
 \end{minted}
 
 \item What is the default SSH port? Change this port for port 2222. Log into Minix 3 using this new SSH server setup. \\[0.5em]
@@ -118,7 +118,7 @@ vi /etc/ssh/sshd_config
 and edit the option ``Port''. \\[0.5em]
 On Linux:
 \begin{minted}{shell}
-ssh root@192.168.1.101 -p2222
+ssh root@localhost -p2222
 \end{minted}
 
 \item List and explain the role of each the file in the \mintinline{shell}{$HOME/.ssh} directory. In \mintinline{shell}{$HOME/.ssh/config}, create an entry for Minix 3.
@@ -127,16 +127,43 @@ ssh root@192.168.1.101 -p2222
 ls $HOME/.ssh
 \end{minted}
 %$
-
-\item Briefly explain how key-only authentication works in SSH. Generate a key-pair on the host system and use it to log into Minix 3 without a password.\\[0.5em]
-On Minix3:
+shows the files
 \begin{minted}{shell}
-ssh-keygen -t rsa
+config  id_rsa  id_rsa.pub  known_hosts
 \end{minted}
-and copy \mintinline{shell}{$HOME/.ssh/id_rsa} to Linux. \\[0.5em] %$
+
+\mintinline{c}{config} is the config file of ssh client. \\[0.5em]
+\mintinline{c}{id_rsa} is the private key of ssh client/server. \\[0.5em]
+\mintinline{c}{id_rsa.pub} is the public key of ssh client/server. \\[0.5em]
+\mintinline{c}{known_hosts} is the ssh servers logged before.
+
+
 On Linux:
 \begin{minted}{shell}
-ssh root@192.168.1.101 -p2222 -iid_rsa
+vi ~/.ssh/config
+\end{minted}
+and add these lines
+\begin{minted}{shell}
+Host    minix
+    HostName        localhost
+    Port            2222
+    User            root
+\end{minted}
+Then directly connect Minix 3 by
+\begin{minted}{shell}
+ssh minix
+\end{minted}
+
+\item Briefly explain how key-only authentication works in SSH. Generate a key-pair on the host system and use it to log into Minix 3 without a password.\\[0.5em]
+First Alice (ssh client) generates a pair of key, and sends the public key to Bob (ssh server). Bob adds the key to a list of authorized hosts. When Alice wants to login, she sends the public key again and Bob uses principles of public key cryptography to verify the identity of Alice. If success, Bob and Alice can connect with a tunnel encrypted by their key pairs.
+
+\begin{minted}{shell}
+ssh-keygen -t rsa
+scp -P2222 ~/.ssh/id_rsa.pub root@localhost:/root
+ssh minix
+cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+exit
+ssh minix -i ~/.ssh/id_rsa
 \end{minted}
 
 \end{itemize}
@@ -282,6 +309,10 @@ curl --silent 'http://aqicn.org/?city=Shanghai&widgetscript&size=large' \
 
 \item Pipelining the output of \mintinline{c}{ifconfig} to \mintinline{c}{awk} return only the ip address of your current active network connection (the active network interface can be passed to \mintinline{c}{ifconfig}).
 
+\begin{minted}{shell}
+ifconfig wlp2s0 | awk '{if(NR==1){print $2}}'
+\end{minted}
+%$
 
 \end{itemize}
 
