@@ -49,13 +49,26 @@ apt-get install git
 \item reset Reset current HEAD to the specified state.
 \end{itemize}
 \item Setup your git repository on the VE482 server.
+
+Edit the config file \mintinline{c}{~/.ssh/config}
+\begin{minted}{c}
+Host ve482
+  HostName 202.120.43.199
+  Port 2482
+  IdentityFile ~/.ssh/id_rsa
+\end{minted}
+Run the script in my project folder
 \begin{minted}{shell}
+git init
+git add .
+git commit -m 'Initial Commit'
 git remote add ve482 git@ve482:515370910207/p1
 git push ve482
 \end{minted}
 \end{itemize}
 
 \section{Git game}
+Will be shown on Lab.
 
 \section{Working with source code}
 
@@ -92,7 +105,24 @@ man diff
 man patch
 \end{minted}
 \item Using the \mintinline{c}{diff} command, create a patch corresponding to your changes in homework 2
-
+\begin{minted}{shell}
+cd
+diff -rc /usr/src_orig /usr/src
+\end{minted}
+\item Retrieve your patch on your Linux system
+\begin{minted}{shell}
+rsync -avz minix:/root/data ~/minix_patch
+\end{minted}
+\item Apply your patch to the copy of \mintinline{c}{/usr/src_orig} on your Linux system
+\begin{minted}{shell}
+cd ~/minix
+patch -p3 ../minix_patch
+\end{minted}
+\item Revert the patch
+\begin{minted}{shell}
+cd ~/minix
+patch -RE -p3 ../minix_patch
+\end{minted}
 \end{itemize}
 
 \end{document}
