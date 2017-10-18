@@ -48,6 +48,17 @@ node_t *list_insert_first(list_t *list, char *str, void *data) {
     return new_node;
 }
 
+const node_t *list_search(list_t *list, const node_t *first, const void *data, int (*cmp)(const void *, const void *)) {
+    if (list->first == NULL) return NULL;
+    if (first == NULL) first = list->first;
+    else first = first->next;
+    while (first) {
+        if (cmp(first->data, data)) return first;
+        first = first->next;
+    }
+    return first;
+}
+
 void list_sort(list_t *list, int (*cmp)(const void *, const void *)) {
     if (list->length == 0)return;
     node_t *arr = malloc(sizeof(node_t) * list->length);
@@ -66,7 +77,7 @@ void list_sort(list_t *list, int (*cmp)(const void *, const void *)) {
     free(arr);
 }
 
-void list_print(list_t *list, FILE *file, void(*print)(FILE* file, const void *)) {
+void list_print(const list_t *list, FILE *file, void(*print)(FILE *file, const void *)) {
     node_t *temp = list->first;
     for (size_t i = 0; i < list->length; i++) {
         fprintf(file, "%s=", temp->str);
