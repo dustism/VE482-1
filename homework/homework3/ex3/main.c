@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 #include "list.h"
 
 typedef enum {
@@ -27,19 +28,27 @@ const char *SORT_NAME[SORT_SIZE] = {
 };
 
 int int_inc(const void *a, const void *b) {
-    return *(int *) (((node_t *) a)->data) > *(int *) (((node_t *) b)->data);
+    int _a = *(int *) (((node_t *) a)->data);
+    int _b = *(int *) (((node_t *) b)->data);
+    if (_a > _b)return 1;
+    if (_a < _b)return -1;
+    return 0;
 }
 
 int int_dec(const void *a, const void *b) {
-    return *(int *) (((node_t *) a)->data) < *(int *) (((node_t *) b)->data);
+    return int_inc(b, a);
 }
 
 int double_inc(const void *a, const void *b) {
-    return *(double *) (((node_t *) a)->data) > *(double *) (((node_t *) b)->data);
+    double _a = *(double *) (((node_t *) a)->data);
+    double _b = *(double *) (((node_t *) b)->data);
+    if (_a > _b)return 1;
+    if (_a < _b)return -1;
+    return 0;
 }
 
 int double_dec(const void *a, const void *b) {
-    return *(double *) (((node_t *) a)->data) < *(double *) (((node_t *) b)->data);
+    return double_inc(b, a);
 }
 
 int string_inc(const void *a, const void *b) {
@@ -51,7 +60,7 @@ int string_dec(const void *a, const void *b) {
 }
 
 int all_rand(const void *a, const void *b) {
-    return rand() % 2;
+    return (rand() % 2) * 2 - 1;
 }
 
 int (*const cmp[VAR_SIZE][SORT_SIZE])(const void *, const void *) = {
@@ -115,8 +124,11 @@ void read_and_sort(VAR_TYPE var_type, SORT_TYPE sort_type) {
             length = strlen(pos + 1);
             data = malloc(sizeof(char) * (length + 1));
             strcpy(data, pos + 1);
+            pos = data + strlen(data) - 1;
+            while(*pos=='\n') *(pos--)='\0';
+            break;
         default:
-            data = malloc(1);
+            assert(0);
             break;
         }
         list_insert_first(list1, str, data);
