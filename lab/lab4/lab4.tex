@@ -1,0 +1,124 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage[colorlinks,urlcolor=blue]{hyperref}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\title{VE482 Lab 4}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Layer programming}
+\begin{itemize}
+\item The program can be divided into three layers, what are they?
+
+The kernel layer, the logic layer and the interface layer.
+\item Split the program into files according to the defined layers.
+
+The kernel layer in list.c/.h, the logic layer in logic.c/.h and the interface layer in interface.c/.h.
+
+\item Create the appropriate corresponding header files.
+
+list.h
+\inputminted{c}{list.h}
+
+logic.h
+\inputminted{c}{logic.h}
+
+\item If necessary rewrite functions such that no call is emitted from lower level functions to upper level
+functions.
+
+list.c
+\inputminted{c}{list.c}
+
+logic.c
+\inputminted{c}{logic.c}
+
+\item
+The initial program implements a command line interface, write a ``Menu interface'' which (i) wel-
+comes the user, (ii) prompts him for some task to perform, and (iii) runs it. When a task is
+completed the user should (i) be informed if it was successful and then (ii) be displayed the menu.
+From the menu he should be able to exit the program.
+
+\item
+Write two main functions, one which will ``dispatch'' the work to another function which will run
+the command line user interface and a second one which will ``dispatch'' the work to the Menu user
+interface.
+
+interface.h
+\inputminted{c}{interface.h}
+
+interface.c
+\inputminted{c}{interface.c}
+
+ui.c
+\inputminted{c}{ui.c}
+
+cli.c
+\inputminted{c}{cli.c}
+\end{itemize}
+
+\section{Libraries}
+\begin{itemize}
+\item What are the three stages performed when compiling a file?
+
+Preprocess, compilation and link.
+
+\item Briefly describe each of them.
+\begin{itemize}
+\item Preprocess: substitute definitions and proceed with pragmas
+\item Compilation: compile source code into binary files and generate symbol table
+\item Link: link binary files according symbol table
+\end{itemize}
+
+\item Search more details on how to proceed.
+
+It's very easy to use CMake to generate static libraries with the ``add\_library'' command.
+
+\item Create two static libraries, one for each of the two lowest layers in the previous program.
+\begin{minted}{cmake}
+add_library(l4_list_static STATIC list.c)
+add_library(l4_logic_static STATIC logic.c)
+\end{minted}
+
+\item Compile the command line version of the program using these two static libraries.
+\begin{minted}{cmake}
+add_executable(l4_cli_static cli.c interface.c)
+target_link_libraries(l4_cli_static l4_logic_static l4_list_static)
+\end{minted}
+
+\item Generate two dynamic libraries, one for each of the two lowest layers in the previous program.
+\begin{minted}{cmake}
+add_library(l4_list_dynamic SHARED list.c)
+add_library(l4_logic_dynamic SHARED logic.c)
+target_link_libraries(l4_logic_dynamic l4_list_dynamic)
+\end{minted}
+
+\item Compile the whole program
+\begin{minted}{cmake}
+add_executable(l4_cli cli.c interface.c logic.c list.c)
+add_executable(l4_ui ui.c interface.c logic.c list.c)
+\end{minted}
+
+\item Compile the Menu version of the program using these two dynamic libraries.
+\begin{minted}{cmake}
+add_executable(l4_ui_dynamic ui.c interface.c)
+target_link_libraries(l4_ui_dynamic l4_api_dynamic l4_list_dynamic)
+\end{minted}
+
+\end{itemize}
+
+
+
+\end{document}

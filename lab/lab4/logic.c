@@ -7,7 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-#include "api.h"
+#include "logic.h"
 
 int int_inc(const void *a, const void *b) {
     int _a = *(int *) (((node_t *) a)->data);

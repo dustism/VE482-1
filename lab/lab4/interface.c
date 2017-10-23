@@ -8,7 +8,7 @@
 #include <time.h>
 
 #include "interface.h"
-#include "api.h"
+#include "logic.h"
 
 int dispatch_cli(int argc, char *argv[]) {
     srand(time(NULL));
