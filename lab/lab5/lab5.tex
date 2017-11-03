@@ -1,0 +1,108 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage[colorlinks,urlcolor=blue]{hyperref}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\title{VE482 Lab 5}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Generalities on GDB}
+\begin{enumerate}
+\item How to enable built-in debugging in gcc?
+
+Use \mintinline{shell}{-g} when compiling.
+
+\item What is the meaning of GDB?
+
+The GNU Project Debugger
+
+\item Compile the C program from homework 4 with debugging enabled.
+
+\begin{minted}{c}
+gcc -g -o ex4 ex4.c
+\end{minted}
+
+\end{enumerate}
+
+\section{Basic use of GDB}
+\begin{enumerate}
+\item Find the homepage of the GDB project.
+
+\url{https://www.gnu.org/software/gdb/}
+
+\item What languages are supported by GDB?
+
+Ada, C, C++, Objective-C, Pascal (and many other languages)
+
+\item What are the following GDB commands doing:
+\begin{itemize}
+\item backtrace
+
+Print a backtrace of the entire stack: one line per frame for all frames in the stack.
+\item where
+
+Same as backtrace.
+\item finish
+
+Execute until selected stack frame returns.
+\item delete
+
+Delete some breakpoints or auto-display expressions.
+Arguments are breakpoint numbers with spaces in between.
+To delete all breakpoints, give no argument.
+\item info breakpoints
+
+Status of specified breakpoints (all user-settable breakpoints if no argument).
+\end{itemize}
+
+\item What is -tui option for GDB?
+
+The TUI mode is enabled by this option. The GDB Text User Interface (TUI) is a terminal interface which uses the curses library to show the source file, the assembly output, the program registers and GDB commands in separate text windows.
+
+\item What is the ``reverse step" in GDB and how to enable it. Provide the key steps and commands.
+
+Reverse debugging is added in GDB 7.0, supported on limited targets (including i386/amd64 linux), so I should use GDB $\geqslant$ 7.0 on Linux to enable it. There are a few commands:
+\begin{itemize}
+\item reverse-continue (`rc')
+
+Continue program being debugged but run it in reverse
+reverse-finish -- Execute backward until just before the selected stack frame is called
+\item reverse-next (`rn')
+
+Step program backward, proceeding through subroutine calls.
+\item reverse-nexti (`rni')
+
+Step backward one instruction, but proceed through called subroutines.
+\item reverse-step (`rs') 
+
+Step program backward until it reaches the beginning of a previous source line
+\item reverse-stepi
+
+Step backward exactly one instruction
+
+\item set exec-direction (forward/reverse)
+
+Set direction of execution.
+All subsequent execution commands (continue, step, until etc.) will run the program being debugged in the selected direction.
+\end{itemize}
+
+Breakpoints and watchpoints will work in reverse -- allowing you for instance to proceed directly to the previous point at which a variable was modified.
+
+\end{enumerate}
+
+\section{API}
+
+\end{document}
