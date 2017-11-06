@@ -1,0 +1,155 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage{minted}
+\usepackage[colorlinks,urlcolor=blue]{hyperref}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\renewcommand{\thesection}{Ex. \arabic{section} ---}
+\newcommand{\unit}[1]{{\rm\,#1}}
+\title{VE482 Homework 5}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Simple questions}
+\begin{enumerate}
+\item
+Each process takes up at most one resource at a moment. When a process asks for the second resource, it can always take a free resource. So a deadlock can't occur.
+\item
+The maximum value of $n$ is 5. The reason is similar to the previous question, each process takes up at most one resource, so there is always at least one free resource when $n\leqslant 5$.
+\item
+$$\frac{35}{50}+\frac{20}{100}+\frac{10}{200}+\frac{x}{250}<1$$
+$$x<12.5$$
+So the largest value for $x$ is 12.5.
+\item
+It can be activated twice in a round. It can be used to implement a scheduler that each process have a priority. Then the more times a process occurs, the higher priority it is.
+\item
+Yes. In source code, the program is likely to be I/O bound if it processes data along with I/O. Otherwise, it is likely to be CPU bound. In runtime, we can use monitor commands like iostat (monitor I/O) and top (monitor CPU) to determine it.
+\end{enumerate}
+
+\section{Deadlocks}
+\begin{enumerate}
+\item 
+$$\begin{bmatrix}
+7 & 4 & 3 \\
+1 & 2 & 2 \\
+6 & 0 & 0 \\
+0 & 1 & 1 \\
+4 & 3 & 1 \\
+\end{bmatrix}$$
+\item
+Yes, the process can be finished in the order $P_2,P_4,P_5,P_1,P_3$.
+\item
+Yes, for example, it can be completed as shown in the table.
+\begin{center}
+\begin{tabular}{cccc}
+\hline
+Process & Allocated & Maximum & Available \\\hline
+$P_2$ & 2 0 0 & 3 2 2 & 5 3 2 \\
+$P_4$ & 2 1 1 & 2 2 2 & 7 4 3 \\
+$P_5$ & 0 0 2 & 4 3 3 & 7 4 5 \\
+$P_1$ & 0 1 0 & 7 5 3 & 7 5 5 \\
+$P_3$ & 3 0 2 & 9 0 2 & 10 5 7\\
+\hline 
+\end{tabular}
+\end{center}
+\end{enumerate}
+
+\section{Research}
+\subsection*{Viruses}
+A computer virus is a type of malicious software program ("malware") that, when executed, replicates itself by modifying other computer programs and inserting its own code. Infected computer programs can include, as well, data files, or the "boot" sector of the hard drive. When this replication succeeds, the affected areas are then said to be "infected" with a computer virus.
+
+Virus writers use social engineering deceptions and exploit detailed knowledge of security vulnerabilities to initially infect systems and to spread the virus. The vast majority of viruses target systems running Microsoft Windows, employing a variety of mechanisms to infect new hosts, and often using complex anti-detection/stealth strategies to evade antivirus software. Motives for creating viruses can include seeking profit (e.g., with ransomware), desire to send a political message, personal amusement, to demonstrate that a vulnerability exists in software, for sabotage and denial of service, or simply because they wish to explore cybersecurity issues, artificial life and evolutionary algorithms.
+
+Computer viruses currently cause billions of dollars' worth of economic damage each year, due to causing system failure, wasting computer resources, corrupting data, increasing maintenance costs, etc. In response, free, open-source antivirus tools have been developed, and an industry of antivirus software has cropped up, selling or freely distributing virus protection to users of various operating systems. As of 2005, even though no currently existing antivirus software was able to uncover all computer viruses (especially new ones), computer security researchers are actively searching for new ways to enable antivirus solutions to more effectively detect emerging viruses, before they have already become widely distributed.
+
+\subsection*{Worms}
+A computer worm is a standalone malware computer program that replicates itself in order to spread to other computers. Often, it uses a computer network to spread itself, relying on security failures on the target computer to access it. Worms almost always cause at least some harm to the network, even if only by consuming bandwidth, whereas viruses almost always corrupt or modify files on a targeted computer.
+
+Many worms that have been created are designed only to spread, and do not attempt to change the systems they pass through. However, as the Morris worm and Mydoom showed, even these "payload-free" worms can cause major disruption by increasing network traffic and other unintended effects.
+
+\subsection*{Trojans}
+In computing, a Trojan horse, or Trojan, is any malicious computer program which misleads users of its true intent. The term is derived from the Ancient Greek story of the deceptive wooden horse that led to the fall of the city of Troy.
+
+Trojans are generally spread by some form of social engineering, for example where a user is duped into executing an e-mail attachment disguised to be unsuspicious, (e.g., a routine form to be filled in), or by drive-by download. Although their payload can be anything, many modern forms act as a backdoor, contacting a controller which can then have unauthorized access to the affected computer. Trojans may allow an attacker to access users' personal information such as banking information, passwords, or personal identity (IP address). It can infect other devices connected to the network. Ransomware attacks are often carried out using a Trojan.
+
+Unlike computer viruses and worms, Trojans generally do not attempt to inject themselves into other files or otherwise propagate themselves.
+
+\subsection*{Reference}
+\url{https://en.wikipedia.org/wiki/Computer_virus}
+
+\url{https://en.wikipedia.org/wiki/Computer_worm}
+
+\url{https://en.wikipedia.org/wiki/Trojan_horse_(computing)}
+
+\section{Programming}
+\inputminted{c++}{ex4.cpp}
+
+\section{Minix 3}
+For this part, we can search for the keyword ``scheduling'' in the minix source code folder and find the file ``minix/kernel/main.c''. I enclosed some of the relating source code below:
+
+\inputminted{c}{ex5.c}
+
+From the source code, we can simply find out that when the system starts, the kernel see if this process is immediately schedulable. In that case, set its privileges now and allow it to run. Only kernel tasks and the root system process get to run immediately. All the other system processes are inhibited from running by the RTS\_NO\_PRIV flag. They can only be scheduled once the root system process has set their privileges.
+
+\section{The reader-writer problem}
+\begin{enumerate}
+\item
+We can first use the semaphore count\_lock to protect the counter, and then proceed with the counter and decide to lock or unlock the db according to the value of counter.
+\begin{minted}{c}
+void read_lock() {
+    down(count_lock);
+    if (counter++ == 0) down(db_lock);
+    up(count_lock);
+}
+
+void read_unlock() {
+    down(count_lock);
+    if (--counter == 0) up(db_lock);
+    up(count_lock);
+}
+\end{minted}
+\item
+If there are so many readers that their reading time fill out the total time, no writer can enter the db because there are readers continuously coming.
+\item
+We can down read\_lock when a writer comes at the moment some readers are in the db. For new readers, down both count\_lock and read\_lock so that when a writer is waiting, the new reader can no longer enter the db. After the writer locks the db, we can up read\_lock so that new readers can enter the db again after the writer leaves.
+\begin{minted}{c}
+void read_lock() {
+    down(read_lock);
+    down(count_lock);
+    if (counter++ == 0) down(db_lock);
+    up(count_lock);
+    up(read_lock);
+}
+
+void read_unlock() {
+    down(count_lock);
+    if (--counter == 0) up(db_lock);
+    up(count_lock);
+}
+
+void write_lock() {
+    down(read_lock);
+    down(db_lock);
+    up(read_lock);
+}
+
+void write_unlock() {
+    up(db_lock);
+}
+\end{minted}
+\item
+No, the priority of writer is higher, it is not solved.
+\end{enumerate}
+
+\end{document}
