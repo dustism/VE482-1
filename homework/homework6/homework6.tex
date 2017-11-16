@@ -23,24 +23,74 @@
 
 \section{Simple questions}
 \begin{enumerate}
-\item First fit:
+\item 
+First fit:
 \begin{enumerate}[(i)]
 \item 20 KB
 \item 10 KB
 \item 18 KB
 \end{enumerate}
-\item Best fit:
+Best fit:
 \begin{enumerate}[(i)]
 \item 12 KB
 \item 10 KB
 \item 9 KB
 \end{enumerate}
-\item Quick fit:
+Quick fit:
 \begin{enumerate}[(i)]
-\item 20 KB
+\item 12 KB
 \item 10 KB
-\item 18 KB
+\item 9 KB
 \end{enumerate}
+\item
+$$\frac{10k}{10k+n}$$
+\item
+Counter 0: 01101110 \\
+Counter 1: 01001001 \\
+Counter 2: 00110111 \\
+Counter 3: 10001011
 \end{enumerate}
+
+\section{Page tables}
+\begin{itemize}
+\item inverted page tables
+
+The inverted page table (IPT) is best thought of as an off-chip extension of the TLB which uses normal system RAM. Unlike a true page table, it is not necessarily able to hold all current mappings. The OS must be prepared to handle misses, just as it would with a MIPS-style software-filled TLB.
+
+The IPT combines a page table and a frame table into one data structure. At its core is a fixed-size table with the number of rows equal to the number of frames in memory. If there are 4000 frames, the inverted page table has 4000 rows. For each row there is an entry for the virtual page number (VPN), the physical page number (not the physical address), some other data and a means for creating a collision chain, as we will see later.
+
+To search through all entries of the core IPT structure is inefficient, and a hash table may be used to map virtual addresses (and address space/PID information if need be) to an index in the IPT - this is where the collision chain is used. This hash table is known as a hash anchor table. The hashing function is not generally optimized for coverage - raw speed is more desirable. Of course, hash tables experience collisions. Due to this chosen hashing function, we may experience a lot of collisions in usage, so for each entry in the table the VPN is provided to check if it is the searched entry or a collision.
+
+In searching for a mapping, the hash anchor table is used. If no entry exists, a page fault occurs. Otherwise, the entry is found. Depending on the architecture, the entry may be placed in the TLB again and the memory reference is restarted, or the collision chain may be followed until it has been exhausted and a page fault occurs.
+
+A virtual address in this schema could be split into two, the first half being a virtual page number and the second half being the offset in that page.
+
+A major problem with this design is poor cache locality caused by the hash function. Tree-based designs avoid this by placing the page table entries for adjacent pages in adjacent locations, but an inverted page table destroys spatial locality of reference by scattering entries all over. An operating system may minimize the size of the hash table to reduce this problem, with the trade-off being an increased miss rate. There is normally one hash table, contiguous in physical memory, shared by all processes. Memory fragmentation makes per-process page tables impractical, so a per-process identifier is used to disambiguate the pages of different processes from each other. It is somewhat slow to remove the page table entries of a process; the OS may avoid reusing per-process identifier values to delay facing this or it may elect to suffer the huge waste of memory associated with pre-allocated (necessary because of fragmentation) per-process hash tables.
+
+\item multilevel page tables
+
+The inverted page table keeps a listing of mappings installed for all frames in physical memory. However, this could be quite wasteful. Instead of doing so, we could create a page table structure that contains mappings for virtual pages. It is done by keeping several page tables that cover a certain block of virtual memory. For example, we can create smaller 1024-entry 4K pages that cover 4M of virtual memory.
+
+This is useful since often the top-most parts and bottom-most parts of virtual memory are used in running a process - the top is often used for text and data segments while the bottom for stack, with free memory in between. The multilevel page table may keep a few of the smaller page tables to cover just the top and bottom parts of memory and create new ones only when strictly necessary.
+
+Now, each of these smaller page tables are linked together by a master page table, effectively creating a tree data structure. There need not be only two levels, but possibly multiple ones.
+
+A virtual address in this schema could be split into three parts: the index in the root page table, the index in the sub-page table, and the offset in that page.
+
+Multilevel page tables are also referred to as hierarchical page tables.
+\end{itemize}
+
+Reference: \url{https://en.wikipedia.org/wiki/Page_table}
+
+\section{Research}
+The buffer overflow attack was discovered in hacking circles. It uses input to a poorly implemented, but (in intention) completely harmless application, typically with root / administrator privileges. The buffer overflow attack results from input that is longer than the implementor intended. To understand its inner workings, we need to talk a little bit about how computers use memory.
+
+The stack is a region in a program's memory space that is only accessible from the top. There are two operations, push and pop, to a stack. A push stores a new data item on top of the stack, a pop removes the top item. Every process has its own memory space (at least in a decent OS), among them a stack region and a heap region. The stack is used heavily to store local variables and the return address of a function.
+
+We look at the following example program, taken from Howard and LeBlanc:
+
+\inputminted{c}{ex3.c}
+
+
 
 \end{document}
