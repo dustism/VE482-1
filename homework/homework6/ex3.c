@@ -11,21 +11,24 @@
 #include <string.h>
 #include <stdio.h> 
 
+void bar(void)
+{
+    printf("Augh! I've been hacked!\n");
+}
+
 void foo(const char* input)
 {
     char buf[10];
 
-    printf("My stack looks like:\n%p\n%p\n%p\n%p\n%p\n%p\n\n");
+    printf("My stack looks like:\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n\n");
+    fflush(stdout);
 
     strcpy(buf, input);
-    printf("%s\n", buf);
+    //printf("%s\n", buf);
+    //fflush(stdout);
 
-    printf("Now the stack looks like:\n%p\n%p\n%p\n%p\n%p\n%p\n\n");
-}
-
-void bar(void)
-{
-    printf("Augh! I've been hacked!\n");
+    printf("Now the stack looks like:\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n\n");
+    fflush(stdout);
 }
 
 int main(int argc, char* argv[])
