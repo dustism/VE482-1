@@ -91,7 +91,119 @@ We look at the following example program, taken from Howard and LeBlanc:
 
 \inputminted{c}{ex3.c}
 
+Now if we compile it with \mint{shell}{gcc -m32 -o ex3 ex3.c}
+
+And run it with the argument ``Hello'' we can get some result (for example)
+
+\begin{minted}{shell}
+Address of foo = 0x565fa69b
+Address of bar = 0x565fa670
+My stack looks like:
+0xffe82280
+0xf760d811
+0x565fa6a7
+0xffe822b0
+0xf7781000
+0xffe82298
+0xffe83655
+0xf7781d60
+0x565fa908
+
+Now the stack looks like:
+0xffe83655
+0xf760d811
+0x565fa6a7
+0xffe822b0
+0xf7781000
+0xffe82298
+0xffe83655
+0x65481d60
+0x6f6c6c
+\end{minted}
+
+It seems like ``0x565fa6a7'' is the return address of function foo, and if we can construct some argument so that it is altered as ``0x565fa670'', the function bar will be called, and we can do something which cause some secure problem in that.
+
+Fortunately, in the new gcc versions (4.x+), the compiler will protect the stack with GCC Stack-Smashing Protector, which can add a guard variable to functions with vulnerable objects. The guard variable will be checked before return the function. It is effective because the attacker don't know the value of it, the variable will be altered before the return address is altered.
+
+Reference: 
+
+\url{https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html#Instrumentation-Options}
+
+\url{http://www.cse.scu.edu/~tschwarz/coen152_05/Lectures/BufferOverflow.html}
+
 \section{Minix 3}
+\begin{enumerate}
+\item
+The files are in ``minix/servers/vm'', such as
+\begin{minted}{shell}
+minix/servers/vm/vm.h
+minix/servers/vm/proto.h
+minix/servers/vm/pt.h
+minix/servers/vm/arch/i386/pagetable.h
+minix/servers/vm/pagetable.c
+\end{minted}
+\item
+We can find
+\begin{minted}{shell}
+#define I386_PAGE_SIZE		4096
+#define ARM_PAGE_SIZE		4096 /* small page on ARM  */
+\end{minted}
+So on both i386 and arm architecture, the page table size is 4096.
+\item
+\begin{minted}{c}
+/* A pagetable. */
+typedef struct {
+    /* Directory entries in VM addr space - root of page table.  */
+    u32_t *pt_dir;       /* page aligned (ARCH_VM_DIR_ENTRIES) */
+    u32_t pt_dir_phys;   /* physical address of pt_dir */
+
+    /* Pointers to page tables in VM address space. */
+    u32_t *pt_pt[ARCH_VM_DIR_ENTRIES];
+
+    /* When looking for a hole in virtual address space, start
+     * looking here. This is in linear addresses, i.e.,
+     * not as the process sees it but the position in the page
+     * page table. This is just a hint.
+     */
+    u32_t pt_virtop;
+} pt_t;
+\end{minted}
+\item
+\begin{minted}{c}
+void pt_init(void);
+void vm_freepages(vir_bytes vir, int pages);
+void pt_init_mem(void);
+void pt_check(struct vmproc *vmp);
+int pt_new(pt_t *pt);
+void pt_free(pt_t *pt);
+int pt_map_in_range(struct vmproc *src_vmp, struct vmproc *dst_vmp, vir_bytes start, vir_bytes end);
+int pt_ptmap(struct vmproc *src_vmp, struct vmproc *dst_vmp);
+int pt_ptalloc_in_range(pt_t *pt, vir_bytes start, vir_bytes end, u32_t flags, int verify);
+void pt_clearmapcache(void);
+int pt_writemap(struct vmproc * vmp, pt_t *pt, vir_bytes v, phys_bytes physaddr, size_t bytes, u32_t flags, u32_t writemapflags);
+int pt_checkrange(pt_t *pt, vir_bytes v, size_t bytes, int write);
+int pt_bind(pt_t *pt, struct vmproc *who);
+void *vm_mappages(phys_bytes p, int pages);
+void *vm_allocpage(phys_bytes *p, int cat);
+void *vm_allocpages(phys_bytes *p, int cat, int pages);
+void *vm_allocpagedir(phys_bytes *p);
+int pt_mapkernel(pt_t *pt);
+void vm_pagelock(void *vir, int lockflag);
+int vm_addrok(void *vir, int write);
+int get_vm_self_pages(void);
+int pt_writable(struct vmproc *vmp, vir_bytes v);
+\end{minted}
+\end{enumerate}
+
+\section{Linux}
+\inputminted{c}{ex5.c}
+
+\section{Dirty COW}
+Dirty COW (Dirty copy-on-write) is a computer security vulnerability for the Linux kernel that affects all Linux-based operating systems including Android. It is a local privilege escalation bug that exploits a race condition in the implementation of the copy-on-write mechanism in the kernel's memory-management subsystem. The vulnerability was discovered by Phil Oester. Because of the race condition, with the right timing, a local attacker can exploit the copy-on-write mechanism to turn a read-only mapping of a file into a writable mapping. Although it is a local privilege escalation, remote attackers can use it in conjunction with other exploits that allow remote execution of non-privileged code to achieve remote root access on a computer. The attack itself does not leave traces in the system log.
+
+The Dirty COW vulnerability has many perceived use cases including proven examples, such as obtaining root permissions in Android devices, as well as several speculated implementations. There are many binaries used in linux which are read-only, and can only be modified or written to by a user of higher permissions, such as the root. When privileges are escalated, whether by genuine or ingenuine means – such as by using the Dirty COW exploit – the user can modify usually unmodifiable binaries and files. If a malicious individual could use the Dirty COW vulnerability to escalate their permissions, they could change a file, such as /bin/bash, so that it performs an additional, unexpected functions, such as a keylogger. When a user starts a program which has been infected, they will inadvertently allow the malicious code to run. If the exploit targets a program which is run with root privileges, the exploit will enjoy those same privileges.
+
+Reference: \url{https://en.wikipedia.org/wiki/Dirty_COW}
 
 
 \end{document}

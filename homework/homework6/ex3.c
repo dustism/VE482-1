@@ -20,14 +20,14 @@ void foo(const char* input)
 {
     char buf[10];
 
-    printf("My stack looks like:\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n\n");
+    printf("My stack looks like:\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n\n");
     fflush(stdout);
 
     strcpy(buf, input);
     //printf("%s\n", buf);
     //fflush(stdout);
 
-    printf("Now the stack looks like:\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n%016p\n\n");
+    printf("Now the stack looks like:\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n\n");
     fflush(stdout);
 }
 
