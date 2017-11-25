@@ -1,0 +1,128 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage[colorlinks,urlcolor=blue]{hyperref}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\title{VE482 Lab 3}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Simple git}
+\begin{itemize}
+\item Search what is \mintinline{c}{git} 
+
+Git is a fast, scalable, distributed revision control system with
+       an unusually rich command set that provides both high-level
+       operations and full access to internals.
+\item Install a git client.
+\begin{minted}{shell}
+apt-get install git
+\end{minted}
+\item Search the use of the following git commands:
+\begin{itemize}
+\item help Display help information about Git.
+\item init Create an empty Git repository or reinitialize an existing one.
+\item checkout Switch branches or restore working tree files.
+\item branch List, create, or delete branches.
+\item push Update remote refs along with associated objects.
+\item pull Fetch from and integrate with another repository or a local branch.
+\item merge Join two or more development histories together.
+\item add Add file contents to the index.
+\item diff Show changes between commits, commit and working tree, etc.
+\item tag Create, list, delete or verify a tag object signed with GPG.
+\item log Show commit logs.
+\item fetch Download objects and refs from another repository.
+\item commit Record changes to the repository.
+\item clone Clone a repository into a new directory.
+\item reset Reset current HEAD to the specified state.
+\end{itemize}
+\item Setup your git repository on the VE482 server.
+
+Edit the config file \mintinline{c}{~/.ssh/config}
+\begin{minted}{c}
+Host ve482
+  HostName 202.120.43.199
+  Port 2482
+  IdentityFile ~/.ssh/id_rsa
+\end{minted}
+Run the script in my project folder
+\begin{minted}{shell}
+git init
+git add .
+git commit -m 'Initial Commit'
+git remote add ve482 git@ve482:515370910207/p1
+git push ve482
+\end{minted}
+\end{itemize}
+
+\section{Git game}
+Will be shown on Lab.
+
+\section{Working with source code}
+
+\subsection{The \mintinline{c}{rsync} command}
+\begin{itemize}
+\item In Minix 3 install the \mintinline{c}{rsync} software
+\begin{minted}{shell}
+pkgin install rsync
+\end{minted}
+\item Install \mintinline{c}{rsync} on you Linux system
+\begin{minted}{shell}
+apt-get install rsync
+\end{minted}
+\item Read \mintinline{c}{rsync} manpage
+\begin{minted}{shell}
+man rsync
+\end{minted}
+\item Create an exact copy of the directory \mintinline{c}{/usr/src} into the directory \mintinline{c}{/usr/src_orig}
+\begin{minted}{shell}
+cp -r /usr/src /usr/src_orig
+\end{minted}
+\item If you have altered Minix 3 source code during homework 2 remove your changes from \mintinline{c}{/usr/src_orig}
+\item Create an exact copy of the Minix 3 directory \mintinline{c}{/usr/src_orig} into your Linux system, using \mintinline{c}{rsync} and \mintinline{c}{ssh} (note that the ssh server must be activated under Linux)
+\begin{minted}{shell}
+rsync -avz minix:/usr/src_orig/ ~/minix
+\end{minted}
+\end{itemize}
+
+\subsection{The \mintinline{c}{diff} and \mintinline{c}{patch} commands}
+\begin{itemize}
+\item Read the manpages of \mintinline{c}{diff} and \mintinline{c}{patch}
+\begin{minted}{shell}
+man diff
+man patch
+\end{minted}
+\item Using the \mintinline{c}{diff} command, create a patch corresponding to your changes in homework 2
+\begin{minted}{shell}
+cd
+diff -rc /usr/src_orig /usr/src
+\end{minted}
+\item Retrieve your patch on your Linux system
+\begin{minted}{shell}
+rsync -avz minix:/root/data ~/minix_patch
+\end{minted}
+\item Apply your patch to the copy of \mintinline{c}{/usr/src_orig} on your Linux system
+\begin{minted}{shell}
+cd ~/minix
+patch -p3 ../minix_patch
+\end{minted}
+\item Revert the patch
+\begin{minted}{shell}
+cd ~/minix
+patch -RE -p3 ../minix_patch
+\end{minted}
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\renewcommand{\thesection}{Ex. \arabic{section} ---}
+\newcommand{\unit}[1]{{\rm\,#1}}
+\title{VE482 Homework 3}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Research on POSIX}
+The Portable Operating System Interface (POSIX) is a family of standards. It defines API, shells and other utility interfaces, for software compatibility with variants of Unix and other operating systems. \\
+
+Unix was selected as the basis for a standard system interface. But later many different versions of Unix (such as Linux, Minix and OS X) are not compatible to each other. That's why POSIX standard was designed and established. \\
+
+The UNIX System V shell is the standard user command line tool in POSIX. Many user-level programs, services, and utilities (including awk, echo, ed) were also standardized, along with required program-level services (including basic I/O: file, terminal, and network). POSIX also defines a standard threading library API which is supported by most modern operating systems.
+
+\section{General questions}
+\begin{enumerate}
+\item 
+The threads in a process are designed by the programmer to cooperate with each other, instead of being hostile. When a thread thinks that it doesn't want as much CPU resource, it can voluntarily release the CPU to help other threads complete more efficiently, so that the performance of the whole process is improved.
+\item
+The advantage is that user space threads are more efficient than kernel space ones, because they don't need to be trapped into the kernel. \\
+The disadvantage is that the block of any user space thread causes the block of the whole process.
+\item
+No. When a single-threaded process is waiting for keyboard input, it can't fork. So when it forks, it must not be in block state, this problem will never occur.
+\item
+These system calls have to be translated into combination of Win32 APIs and other codes, which will be less efficient than origin system calls.
+\end{enumerate}
+
+\section{C programming}
+In the ex3 folder.
+
+\end{document}

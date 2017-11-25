@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+\geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=4.0cm}
+\renewcommand{\thesection}{Ex. \arabic{section} ---}
+\newcommand{\unit}[1]{{\rm\,#1}}
+\title{VE482 Homework 4}
+\author{Liu Yihao 515370910207}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Simple questions}
+\begin{enumerate}
+\item
+% It could happen that the runtime system is precisely at the point of blocking or  unblocking a thread, and is busy manipulating the scheduling queues. This would be a very inopportune moment for the clock interrupt handler to begin inspecting those queues to see if it was time to do thread switching, since they might be in an inconsistent state. One solution is to set a flag when the runtime system is entered. The clock handler would see this and set its own flag, then return. When the runtime system finished, it would check the clock flag, see that a clock interrupt occurred, and now run the clock handler.
+\item
+% Yes it is possible, but inefficient. A thread wanting to do a system call first sets  an alarm timer, then does the call. If the call blocks, the timer returns control to the threads package. Of course, most of the time the call will not block, and the timer has to be cleared. Thus each system call that might block has to be executed as three system calls. If timers go off prematurely, all kinds of problems can develop. This is not an attractive way to build a threads package.
+\end{enumerate}
+
+\section{Monitors}
+The solution is very inefficient because when a process is blocked by the waituntil operation, the system must keeping evaluating the value of the boolean expression. This will cause much computing resource especially when the expression is complicated.
+
+\section{Race condition in Bash}
+\begin{enumerate}
+\item
+ex3\_race.sh
+\inputminted{shell}{ex3_race.sh}
+Use the command to execute it, the race condition will be found in the first output, we can observe two number ``1''.
+\begin{minted}{shell}
+bash ./ex3_race.sh & bash ./ex3_race.sh
+\end{minted}
+\item
+ex3\_no\_race.sh
+\inputminted{shell}{ex3_no_race.sh}
+Use the command to execute it, no race condition is found.
+\begin{minted}{shell}
+bash ./ex3_no_race.sh & bash ./ex3_no_race.sh
+\end{minted}
+\end{enumerate}
+
+\section{Programming with semaphores}
+\inputminted{c}{ex4.c}
+
+
+\end{document}
