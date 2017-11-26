@@ -1,0 +1,122 @@
+                                                                          Goals of the lab
+    VE482— Introduction to
+    Operating Systems                                         Understand layer programming
+                                                              Follow a clearly defined API
+    Lab 4
+    Manuel — UM-JI (Fall 2017)                                Write libraries
+1     Layer programming
+When writing code one of the most important goal is flexibility. In particular it should be possible to alter
+part of the program without having to rewrite everything. For instance in the case of a music player
+the part of the code in charge of opening a file, decoding it, and sending it to the sound card should be
+totally independent from the Graphical User Interface (GUI). If this is not the case, changing the toolkit
+used to build the GUI will impact the core functionalities of the program, leading to a complete rewriting
+of the software. On the other hand if the various components are developed with layers in mind, the GUI
+will be implemented as top layer such that altering it will not impact the lower layers in charge of the
+player’s core functionalities.
+Basic principles in layer programming:
+     A function may not call a function from any higher layer;
+     A function can only issue calls to functions from a same or a lower layer.
+We now refer to exercise 3 from assignment 3 as an example on how to write code using layers.
+     The program can be divided into three layers, what are they?
+     Split the program into files according to the defined layers.
+     Create the appropriate corresponding header files.
+     If necessary rewrite functions such that no call is emitted from lower level functions to upper level
+       functions.
+     The initial program implements a command line interface, write a “Menu interface” which (i) wel-
+       comes the user, (ii) prompts him for some task to perform, and (iii) runs it. When a task is
+       completed the user should (i) be informed if it was successful and then (ii) be displayed the menu.
+       From the menu he should be able to exit the program.
+     Write two main functions, one which will “dispatch” the work to another function which will run
+       the command line user interface and a second one which will “dispatch” the work to the Menu user
+       interface.
+2     Libraries
+In order to understand libraries we first recall a few basics on compilation.
+     What are the three stages performed when compiling a file?
+     Briefly describe each of them.
+A library is a collection of functions, data types, constants, etc. . . which are put together. When compiling,
+the machine code corresponding to those elements is generated. Two types of libraries exist: static and
+dynamic. Explain the difference between the two.
+Generating a static library is a simple process: collect several functions and pack them into an ar archive.
+     Search more details on how to proceed.
+     Create two static libraries, one for each of the two lowest layers in the previous program.
+     Compile the command line version of the program using these two static libraries.
+Generating shared, or dynamic, libraries is a slightly more complex process. Since the library is to be shared
+among various programs none of them can rely on a predefined location where to find the functions in
+the memory. Therefore as the library has to store its information at different memory addresses it is
+compiled into a Position-Independent Code (IPC). This is achieved by running gcc with the flag -fpic.
+Then in order to effectively create the dynamic library, gcc has to be re-run with the flag -shared.
+     Generate two dynamic libraries, one for each of the two lowest layers in the previous program.
+     Compile the whole program
+     Compile the Menu version of the program using these two dynamic libraries.
+A few extra remarks:
+     What is the difference between a library and the API.
+     Implement the API below for the two libraries.
+                                      C Object Oriented Programming
+  1  #ifndef  ̇LAB4 ̇DLIST ̇H ̇
+  2  #define  ̇LAB4 ̇DLIST ̇H ̇
+  3
+  4  // Data type stored in the dlist
+  5  typedef enum dlistValueType ̇t –
+  6        DLIST ̇INT       = 0x01, // list contains int values
+  7        DLIST ̇STR       = 0x02, // list contains char* values
+  8        DLIST ̇DOUBLE = 0x03, // list contains double values
+  9        DLIST ̇UNKOWN = 0x00
+ 10   ̋ dlistValueType;
+ 11
+ 12  // Different options for sorting
+ 13  // String are sorted in lexical order
+ 14  typdef enum dlistSortMethod ̇t –
+ 15        DLIST ̇SORT ̇RAND = 0x01,         // Randomize entries
+ 16        DLIST ̇SORT ̇INC      = 0x02,     // Sort in ascending order
+ 17        DLIST ̇SORT ̇DEC      = 0x03,     // Sort in descending order
+ 18        DLIST ̇SORT ̇UNKOWN = 0x00
+ 19   ̋ dlistSortMethod;
+ 20
+ 21  // The value stored in the dlist
+ 22  // Research online what an ”union” is.
+23 typedef union dlistValue ̇t –
+24     int    intValue;
+25     double doubleValue;
+26     char*  strValue
+27  ̋ dlistValue;
+28
+29 typedef void*        dlist;
+30 typedef const void* dlist ̇const;
+31
+32 dlist createDlist(dlistValueType type);
+33 // EFFECTS: allocate and create a new dlist of datatype 'type' object
+34 //          returns the created dlist object on success
+35 //          returns NULL on error
+36
+37 int dlistIsEmpty(dlist ̇const this);
+38 // REQUIRES: argument 'this' is non-null and is a valid list
+39 // EFFECTS: return whether the list 'this' is empty
+40
+41 void dlistAppend(dilst this, const char* key, dlistValue value);
+42 // REQUIRES: type instantiated in 'value' corresponds to the datatype in the list
+43 //            argument 'this' and 'key' are both non-null and valid lists
+44 // EFFECTS : add a line of form ”key=value” to the tail of the dlist
+45 // MODIFIES: modifies 'this'.
+46
+47 void dlistSort(dlist ̇const this, dlist listDst, dlistSortMethod method);
+48 // REQUIRES: argument 'this' is not null and is a valid list
+49 //            argument 'listDst' is not null and is a valid list
+50 // EFFECTS: Sort 'listSrc' using method given by 'method'.
+51 //          Put the results in 'listDst' on success
+52 //          Leave 'listDst' unchanged on failure
+53 //          * Note 'listDst' may be non-empty when invoked.
+54 //          * Be very careful with memory management regarding string lists.
+55 // MODIFIES: argument 'listDst'
+56
+57 void dlistPrint(dlist ̇const this);
+58 // REQUIRES: argument 'this' is not null and is a valid list
+59 // EFFECTS: Print the content of 'this' in the required format to standard output.
+60 //          A newline must be followed after each line (including the last one).
+61
+62 void dlistFree(dlist this);
+63 // REQUIRES: argument 'this' is ¡EITHER¿ NULL or a valid list
+64 // EFFECTS: if 'this' is NULL do nothing, other wise frees the list
+65 //          By freeing the list the user also needs to free the data
+66 //          the list manages
+67
+68 #endif
