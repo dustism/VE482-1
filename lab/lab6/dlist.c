@@ -54,6 +54,7 @@ dlist createDlist(dlistValueType type) {
     if (type > DLIST_UNKOWN && type <= DLIST_DOUBLE) {
         list_t *list;
         list_init(&list);
+        list->type = type;
         return list;
     }
     return NULL;

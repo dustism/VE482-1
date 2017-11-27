@@ -11,9 +11,10 @@
 
 static void list_iter_next(list_iter_t *it) {
     node_t *next;
-    if (it->b == it->list->zero) {
-        next = it->list->first;
-        it->flag = 1;
+    if (it->b == it->list->last) {
+        next = it->list->zero;
+    } else if (it->a == it->list->zero) {
+        next = (node_t *) (it->b->pn);
     } else {
         next = (node_t *) (it->b->pn ^ (size_t) it->a);
     }
@@ -25,11 +26,10 @@ static void list_iter_init(const list_t *list, list_iter_t *it) {
     it->list = list;
     it->a = list->zero;
     it->b = list->first;
-    it->flag = 0;
 }
 
 static int list_iter_end(list_iter_t *it) {
-    return it->a == it->list->zero && it->flag;
+    return it->b == it->list->zero || it->list->length == 0;
 }
 
 static node_t *list_iter_get(list_iter_t *it) {
@@ -52,7 +52,7 @@ node_t *list_node_init(list_t *list, const char *str, dlistValue data) {
     return new_node;
 }
 
-void list_node_free(list_t *list, node_t* node) {
+void list_node_free(list_t *list, node_t *node) {
     if (list->type == DLIST_STR) {
         free(node->data.strValue);
     }
@@ -63,7 +63,6 @@ void list_node_free(list_t *list, node_t* node) {
 void list_init(list_t **list) {
     *list = malloc(sizeof(list_t));
     node_t *temp = malloc(sizeof(node_t));
-    temp->data = NULL;
     temp->str = NULL;
     temp->pn = 0;
     (*list)->zero = temp;
@@ -74,19 +73,19 @@ void list_init(list_t **list) {
 
 void list_free(list_t *list) {
     list_clear(list);
+    free(list->zero);
     free(list);
 }
 
 void list_clear(list_t *list) {
     list_iter_t it;
-    for (list_iter_init(list, &it); list_iter_end(&it); list_iter_next(&it)) {
+    for (list_iter_init(list, &it); !list_iter_end(&it); list_iter_next(&it)) {
         node_t *temp = list_iter_get(&it);
         list_node_free(list, temp);
     }
     list->first = list->last = NULL;
     list->length = 0;
 }
-
 
 
 node_t *list_prepend(list_t *list, const char *str, dlistValue data) {
@@ -121,7 +120,7 @@ void list_sort(list_t *list, list_t *new_list, int (*cmp)(const void *, const vo
     node_t *arr = malloc(sizeof(node_t) * list->length);
     list_iter_t it;
     int i = 0;
-    for (list_iter_init(list, &it); list_iter_end(&it); list_iter_next(&it)) {
+    for (list_iter_init(list, &it); !list_iter_end(&it); list_iter_next(&it)) {
         memcpy(arr + (i++), list_iter_get(&it), sizeof(node_t));
     }
     qsort(arr, list->length, sizeof(node_t), cmp);
@@ -133,21 +132,21 @@ void list_sort(list_t *list, list_t *new_list, int (*cmp)(const void *, const vo
 
 void list_print(const list_t *list, FILE *file) {
     list_iter_t it;
-    for (list_iter_init(list, &it); list_iter_end(&it); list_iter_next(&it)) {
+    for (list_iter_init(list, &it); !list_iter_end(&it); list_iter_next(&it)) {
         node_t *temp = list_iter_get(&it);
         fprintf(file, "%s=", temp->str);
         switch (list->type) {
-            case DLIST_STR:
-                fprintf(file, "%s\n", temp->data.strValue);
-                break;
-            case DLIST_INT:
-                fprintf(file, "%d\n", temp->data.intValue);
-                break;
-            case DLIST_DOUBLE:
-                fprintf(file, "%lf", temp->data.doubleValue);
-                break;
-            default:
-                assert(0);
+        case DLIST_STR:
+            fprintf(file, "%s\n", temp->data.strValue);
+            break;
+        case DLIST_INT:
+            fprintf(file, "%d\n", temp->data.intValue);
+            break;
+        case DLIST_DOUBLE:
+            fprintf(file, "%lf", temp->data.doubleValue);
+            break;
+        default:
+            assert(0);
         }
     }
 }

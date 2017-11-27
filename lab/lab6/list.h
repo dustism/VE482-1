@@ -24,7 +24,6 @@ typedef struct list {
 typedef struct list_iter {
     const struct list* list;
     struct node *a, *b;
-    int flag;
 } list_iter_t;
 
 void list_init(list_t **list);
